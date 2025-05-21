@@ -2,29 +2,20 @@ import tweepy
 import requests
 import random
 import os
-import time
 
+# Twitter API Credentials
 API_KEY = os.environ["TWITTER_API_KEY"]
 API_SECRET = os.environ["TWITTER_API_SECRET"]
 ACCESS_TOKEN = os.environ["TWITTER_ACCESS_TOKEN"]
 ACCESS_TOKEN_SECRET = os.environ["TWITTER_ACCESS_TOKEN_SECRET"]
+BEARER_TOKEN = os.environ["TWITTER_BEARER_TOKEN"]
 GROQ_API_KEY = os.environ["GROQ_API_KEY"]
 
-def get_bearer_token():
-    """Get bearer token from API credentials"""
-    auth = tweepy.OAuthHandler(API_KEY, API_SECRET)
-    auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-    return auth.get_access_token()
-
-# Initialize Twitter client for automated bot with proper auth
+# Initialize Twitter client for automated bot
 try:
-    # First try with OAuth 2.0 Bearer Token
-    auth = tweepy.OAuthHandler(API_KEY, API_SECRET)
-    auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-    bearer_token = auth.get_access_token()
-    
+    # Initialize with both OAuth 1.0a and Bearer token
     client = tweepy.Client(
-        bearer_token=bearer_token,
+        bearer_token=BEARER_TOKEN,  # For API v2 endpoints
         consumer_key=API_KEY,
         consumer_secret=API_SECRET,
         access_token=ACCESS_TOKEN,
