@@ -2,6 +2,7 @@ import tweepy
 import requests
 import random
 import os
+import time
 
 API_KEY = os.environ["TWITTER_API_KEY"]
 API_SECRET = os.environ["TWITTER_API_SECRET"]
@@ -9,29 +10,34 @@ ACCESS_TOKEN = os.environ["TWITTER_ACCESS_TOKEN"]
 ACCESS_TOKEN_SECRET = os.environ["TWITTER_ACCESS_TOKEN_SECRET"]
 GROQ_API_KEY = os.environ["GROQ_API_KEY"]
 
-# Initialize Twitter client for automated bot
-client = tweepy.Client(
-    consumer_key=API_KEY,
-    consumer_secret=API_SECRET,
-    access_token=ACCESS_TOKEN,
-    access_token_secret=ACCESS_TOKEN_SECRET,
-    wait_on_rate_limit=True
-)
+def get_bearer_token():
+    """Get bearer token from API credentials"""
+    auth = tweepy.OAuthHandler(API_KEY, API_SECRET)
+    auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+    return auth.get_access_token()
 
-def verify_twitter_auth():
-    """Verify Twitter authentication is working"""
-    try:
-        # Try to get user profile to verify credentials
-        me = client.get_me()
-        print("✅ Twitter authentication successful!")
-        return True
-    except tweepy.errors.TweepyException as e:
-        print("❌ Twitter authentication failed:", str(e))
-        return False
-
-# Verify auth on startup
-if not verify_twitter_auth():
-    raise Exception("Failed to authenticate with Twitter API")
+# Initialize Twitter client for automated bot with proper auth
+try:
+    # First try with OAuth 2.0 Bearer Token
+    auth = tweepy.OAuthHandler(API_KEY, API_SECRET)
+    auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+    bearer_token = auth.get_access_token()
+    
+    client = tweepy.Client(
+        bearer_token=bearer_token,
+        consumer_key=API_KEY,
+        consumer_secret=API_SECRET,
+        access_token=ACCESS_TOKEN,
+        access_token_secret=ACCESS_TOKEN_SECRET,
+        wait_on_rate_limit=True
+    )
+    
+    # Test auth by getting own user info
+    me = client.get_me()
+    print("✅ Twitter authentication successful!")
+except tweepy.errors.TweepyException as e:
+    print(f"❌ Twitter authentication failed: {str(e)}")
+    raise
 
 TREND_TOPICS = [
     "web3 development", "AI in coding", "blockchain security", "smart contracts",
