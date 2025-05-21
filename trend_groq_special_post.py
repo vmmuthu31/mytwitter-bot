@@ -9,15 +9,29 @@ ACCESS_TOKEN = os.environ["TWITTER_ACCESS_TOKEN"]
 ACCESS_TOKEN_SECRET = os.environ["TWITTER_ACCESS_TOKEN_SECRET"]
 GROQ_API_KEY = os.environ["GROQ_API_KEY"]
 
-# Create API V2 Client
+# Initialize Twitter client for automated bot
 client = tweepy.Client(
     consumer_key=API_KEY,
     consumer_secret=API_SECRET,
     access_token=ACCESS_TOKEN,
     access_token_secret=ACCESS_TOKEN_SECRET,
-    return_type=dict,
     wait_on_rate_limit=True
 )
+
+def verify_twitter_auth():
+    """Verify Twitter authentication is working"""
+    try:
+        # Try to get user profile to verify credentials
+        me = client.get_me()
+        print("✅ Twitter authentication successful!")
+        return True
+    except tweepy.errors.TweepyException as e:
+        print("❌ Twitter authentication failed:", str(e))
+        return False
+
+# Verify auth on startup
+if not verify_twitter_auth():
+    raise Exception("Failed to authenticate with Twitter API")
 
 TREND_TOPICS = [
     "web3 development", "AI in coding", "blockchain security", "smart contracts",
