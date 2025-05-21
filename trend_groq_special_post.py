@@ -9,12 +9,14 @@ ACCESS_TOKEN = os.environ["TWITTER_ACCESS_TOKEN"]
 ACCESS_TOKEN_SECRET = os.environ["TWITTER_ACCESS_TOKEN_SECRET"]
 GROQ_API_KEY = os.environ["GROQ_API_KEY"]
 
-# Initialize the Twitter API v2 client
+# Create API V2 Client
 client = tweepy.Client(
-    consumer_key=API_KEY, 
+    consumer_key=API_KEY,
     consumer_secret=API_SECRET,
-    access_token=ACCESS_TOKEN, 
-    access_token_secret=ACCESS_TOKEN_SECRET
+    access_token=ACCESS_TOKEN,
+    access_token_secret=ACCESS_TOKEN_SECRET,
+    return_type=dict,
+    wait_on_rate_limit=True
 )
 
 TREND_TOPICS = [
