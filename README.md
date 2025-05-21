@@ -1,4 +1,4 @@
-# DevTrends Twitter Bot 🚀
+# My Twitter Bot 🚀
 
 An AI-powered Twitter bot that shares authentic, technical developer experiences and tips across Web3, Full Stack, DevOps, and emerging technologies. Built with Python, Tweepy, and Groq LLM.
 
