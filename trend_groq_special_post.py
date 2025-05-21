@@ -9,8 +9,13 @@ ACCESS_TOKEN = os.environ["TWITTER_ACCESS_TOKEN"]
 ACCESS_TOKEN_SECRET = os.environ["TWITTER_ACCESS_TOKEN_SECRET"]
 GROQ_API_KEY = os.environ["GROQ_API_KEY"]
 
-auth = tweepy.OAuth1UserHandler(API_KEY, API_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-api = tweepy.API(auth)
+# Initialize the Twitter API v2 client
+client = tweepy.Client(
+    consumer_key=API_KEY, 
+    consumer_secret=API_SECRET,
+    access_token=ACCESS_TOKEN, 
+    access_token_secret=ACCESS_TOKEN_SECRET
+)
 
 TREND_TOPICS = [
     "web3 development", "AI in coding", "blockchain security", "smart contracts",
@@ -107,10 +112,12 @@ def generate_post(trend):
 
 def post_tweet(text):
     try:
-        api.update_status(status=text)
+        response = client.create_tweet(text=text)
         print("✅ Tweet posted successfully!")
-    except tweepy.TweepError as e:
-        print("❌ Tweet failed:", e)
+        return response
+    except tweepy.errors.TweepyException as e:
+        print("❌ Tweet failed:", str(e))
+        return None
 
 if __name__ == "__main__":
     trend = get_trend()
