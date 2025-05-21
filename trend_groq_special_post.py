@@ -11,11 +11,9 @@ ACCESS_TOKEN_SECRET = os.environ["TWITTER_ACCESS_TOKEN_SECRET"]
 BEARER_TOKEN = os.environ["TWITTER_BEARER_TOKEN"]
 GROQ_API_KEY = os.environ["GROQ_API_KEY"]
 
-# Initialize Twitter client for automated bot
 try:
-    # Initialize with both OAuth 1.0a and Bearer token
     client = tweepy.Client(
-        bearer_token=BEARER_TOKEN,  # For API v2 endpoints
+        bearer_token=BEARER_TOKEN,  
         consumer_key=API_KEY,
         consumer_secret=API_SECRET,
         access_token=ACCESS_TOKEN,
@@ -23,7 +21,6 @@ try:
         wait_on_rate_limit=True
     )
     
-    # Test auth by getting own user info
     me = client.get_me()
     print("✅ Twitter authentication successful!")
 except tweepy.errors.TweepyException as e:
@@ -31,12 +28,40 @@ except tweepy.errors.TweepyException as e:
     raise
 
 TREND_TOPICS = [
-    "web3 development", "AI in coding", "blockchain security", "smart contracts",
-    "machine learning", "open source tools", "devops best practices", "prompt engineering",
-    "cloud functions", "zero-knowledge proofs", "ReactJS trends", "TypeScript tips",
-    "Python automation", "Llama 3 models", "coding productivity hacks", "frontend frameworks",
-    "backend scaling", "cybersecurity basics", "mobile app debugging"
+    # Web3 & Blockchain
+    "web3 development", "blockchain security", "smart contracts", "NFT development",
+    "decentralized apps", "zero-knowledge proofs", "DAO development", "DeFi tips",
+    # Full Stack Development
+    "NextJS tips", "React optimization", "NestJS backend", "PostgreSQL tips",
+    "Mantine UI", "TailwindCSS tricks", "AWS deployment", "Kafka patterns",
+    # Open Source & Career
+    "open source contribution", "hackathon tips", "tech speaking", "mentorship",
+    # DevOps & Cloud
+    "AWS S3 tips", "AWS EC2 setup", "AWS SES integration", "cloud deployment",
+    # Emerging Tech
+    "lit-element", "web components", "storybook patterns", "drupal headless"
 ]
+
+PERSONAL_EXPERIENCES = {
+    "web3": [
+        "Built GreenDAO for farmer supply chain management 🌾",
+        "Developed Matic Naming Service for decentralized domains 🔍",
+        "Created NFT Media - a Web3 social platform with NFT subscriptions 🎨",
+        "Won multiple blockchain hackathons including Starknet & APTOS 🏆"
+    ],
+    "fullstack": [
+        "Built scalable systems with NextJS, NestJS & PostgreSQL 🚀",
+        "Integrated AWS services (S3, EC2, SES) in production apps ☁️",
+        "Developed features for Polkassembly.io including Activity Feed 📱",
+        "Created decoupled Drupal systems with web components 🔧"
+    ],
+    "opensource": [
+        "1500+ GitHub contributions and growing 📈",
+        "Google Summer of Code 2022 project completion ✨",
+        "Mentored 500+ students in technical workshops 👨‍🏫",
+        "Speaker at multiple tech conferences and hackathons 🎤"
+    ]
+}
 
 def get_trend():
     return random.choice(TREND_TOPICS)
@@ -44,13 +69,12 @@ def get_trend():
 def generate_post(trend):
     tech_keywords = {
         "web3": ["web3", "decentralized", "crypto", "ethereum", "solidity", "dapp", "blockchain", "nft", "dao", "defi"],
-        "ai": ["ai", "artificial intelligence", "machine learning", "ml", "deep learning", "llm", "neural network", "chatgpt", "openai", "stable diffusion", "midjourney"],
-        "blockchain": ["blockchain", "bitcoin", "ethereum", "crypto", "smart contract", "defi", "web3", "nft", "token", "mining"],
-        "frontend": ["react", "vue", "angular", "javascript", "typescript", "css", "html", "nextjs", "frontend", "ui", "ux"],
-        "backend": ["nodejs", "python", "java", "golang", "api", "rest", "graphql", "microservices", "database", "sql"],
-        "devops": ["docker", "kubernetes", "aws", "azure", "devops", "ci/cd", "cloud", "deployment", "scaling", "monitoring"],
-        "cybersecurity": ["security", "hack", "vulnerability", "encryption", "cyber", "privacy", "authentication", "breach"],
-        "mobile": ["android", "ios", "flutter", "react native", "swift", "kotlin", "mobile app", "pwa"]
+        "ai": ["ai", "artificial intelligence", "machine learning", "ml", "deep learning", "llm", "neural network", "chatgpt", "openai"],
+        "blockchain": ["blockchain", "bitcoin", "ethereum", "crypto", "smart contract", "defi", "web3", "nft", "token"],
+        "frontend": ["react", "vue", "nextjs", "frontend", "ui", "tailwind", "mantine", "storybook", "web components"],
+        "backend": ["nodejs", "nestjs", "postgresql", "kafka", "api", "graphql", "microservices", "database"],
+        "devops": ["aws", "s3", "ec2", "ses", "cloud", "deployment", "scaling"],
+        "opensource": ["gsoc", "drupal", "mentorship", "contribution", "community"]
     }
     lower_trend = trend.lower()
     topic = None
@@ -89,11 +113,19 @@ def generate_post(trend):
 
     other_trends = random.sample([t for t in TREND_TOPICS if t != trend], 2)
 
+    experience = None
+    if topic == "web3" or topic == "blockchain":
+        experience = random.choice(PERSONAL_EXPERIENCES["web3"])
+    elif topic in ["frontend", "backend", "devops"]:
+        experience = random.choice(PERSONAL_EXPERIENCES["fullstack"])
+    elif topic == "opensource":
+        experience = random.choice(PERSONAL_EXPERIENCES["opensource"])
+
     prompt = (
-        f"You're a developer who loves sharing practical tips. The trending topic is '{trend}' "
-        f"and some other hot topics are {', '.join(other_trends)}. {extra} "
-        f"Write a tweet that's specific, useful, and conversation-starting. Include relevant emojis, "
-        f"but use them naturally. Keep it under 260 chars. Make it sound like a real dev sharing their experience."
+        f"You're a developer sharing real experience. The topic is '{trend}'. "
+        + (f"Here's a relevant experience: {experience}. " if experience else "")
+        + "Write a tweet that's specific, technical, and helpful. Include relevant emojis naturally. "
+        + "Keep it under 260 chars. Make it sound like a real dev sharing their experience."
     )
 
     url = "https://api.groq.com/openai/v1/chat/completions"
