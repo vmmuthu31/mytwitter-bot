@@ -135,22 +135,28 @@ def generate_post(trend):
         "messages": [
             {"role": "system", "content": "You're an experienced developer who loves sharing specific, practical tips. "
                                           "You write in a natural, conversational style with personality. "
-                                          "You avoid generic advice and corporate speak."},
+                                          "Focus on one concrete tip or discovery. No marketing speak."},
             {"role": "user", "content": prompt}
         ],
         "max_tokens": 100,
-        "temperature": 0.85,
-        "top_p": 0.95,
-        "presence_penalty": 0.3,
-        "frequency_penalty": 0.5
+        "temperature": 0.9,  
+        "top_p": 0.9,
+        "presence_penalty": 0.6,  
+        "frequency_penalty": 0.7  
     }
 
     resp = requests.post(url, headers=headers, json=payload, timeout=30)
     resp.raise_for_status()
     tweet = resp.json()["choices"][0]["message"]["content"].strip()
     tweet = tweet.replace('"', '')
-
-    if tweet.lower().startswith(("hey", "quick tip", "pro tip")):
+    tweet = tweet.replace('I would recommend', 'I recommend')
+    tweet = tweet.replace('I have found', 'I found')
+    tweet = tweet.replace('I am', "I'm")
+    tweet = tweet.replace('Just a tip:', '')
+    
+    # Remove common AI-style starters
+    common_starts = ('hey', 'quick tip', 'pro tip', 'tip:', 'fun fact', 'reminder')
+    if tweet.lower().startswith(common_starts):
         tweet = tweet.split(' ', 1)[1]
 
     return tweet
