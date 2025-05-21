@@ -122,10 +122,12 @@ def generate_post(trend):
         experience = random.choice(PERSONAL_EXPERIENCES["opensource"])
 
     prompt = (
-        f"You're a developer sharing real experience. The topic is '{trend}'. "
-        + (f"Here's a relevant experience: {experience}. " if experience else "")
-        + "Write a tweet that's specific, technical, and helpful. Include relevant emojis naturally. "
-        + "Keep it under 260 chars. Make it sound like a real dev sharing their experience."
+        f"You're a developer sharing real experience. The topic is '{trend}'.\n"
+        + (f"Here's a relevant experience: {experience}.\n" if experience else "")
+        + "Write a tweet that's specific, technical, and helpful. Include relevant emojis naturally.\n"
+        + "Keep it under 260 chars. Make it sound like a real dev sharing their experience.\n"
+        + "Format the tweet with appropriate line breaks for readability. Use 2-3 short paragraphs max.\n"
+        + "Start with the main point, then add context or results in the next paragraph."
     )
 
     url = "https://api.groq.com/openai/v1/chat/completions"
